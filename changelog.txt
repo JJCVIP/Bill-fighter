@@ -1,6 +1,21 @@
+---------------Version 1.1.1 Alpha---------------
+    -added a stage and moved the ground up to align with the stage
+    -changes file names and directories
+
+~JJ 7/30/2022
+
+---------------Version 1.1 Alpha---------------
+    -added death detection and function when Bill goes off the screen
+    -changed background color
+
+~JJ 7/30/2022
+
 ---------------Version 1.0 Alpha---------------
     -created the PIXI application
     -created a temporary player sprite
     -created an entity class
     -instituted a gravity function
     -added jump, left, and right movement options
+~JJ 7/29/2022
+
+
