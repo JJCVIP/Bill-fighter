@@ -1,1 +1,3 @@
-Literally No idea what this is going to be.
+A theoretically multiplayer platform fighter based on Hoedaism lore.
+
+https://JJCVIP.github.io/Bill-Fighter/
