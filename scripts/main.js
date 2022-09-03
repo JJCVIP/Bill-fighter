@@ -34,17 +34,14 @@ class entity extends PIXI.Sprite{
         }
     }
     jump(){
-        if(this.jumpsRemaining<1){
-            return;
-        }
+        if(this.jumpsRemaining<1) return;
+        
         if(this.jumpsRemaining>=1){
             this.jumpsRemaining-=1;
             this.falltime=0.01;
         }
         
-        const sleep = (time) => {
-            return new Promise((resolve) => setTimeout(resolve, time))
-        }
+        const sleep = (time) => {return new Promise((resolve) => setTimeout(resolve, time))}
 
         const jumping = async () => {
             for (let i = 0; i < 500; i++) {
@@ -94,7 +91,6 @@ class entity extends PIXI.Sprite{
         respawn();
     }
 }
-
 class object extends PIXI.Sprite{
     constructor(texture,x,y){
         super(texture);
@@ -108,7 +104,7 @@ app.loader.baseUrl="assets";
 
 app.loader
     .add("Bill","sprites/TempBill2.png")
-    .add("Stage","stage.png");
+    .add("Stage","bricks.png");
 
 app.loader.onComplete.add(doneLoading);
 app.loader.load();
@@ -135,29 +131,16 @@ function addObjects(){
 //gameloop
 function gameLoop(delta){
     Bill.gravity();
-    if(keys["a"]==true){
-        Bill.moveLeft();
-    }
-    if(keys["d"]==true){
-        Bill.moveRight();
-    }
-    if(Bill.x<-50 || Bill.x>1330){
-        Bill.death();
-    }
+    if(keys["a"]==true) Bill.moveLeft();
+    if(keys["d"]==true) Bill.moveRight();
+    if(Bill.x<-50 || Bill.x>1330) Bill.death();
 }
 
 //keyboard handlers
 window.addEventListener('keydown',keysdown);
 window.addEventListener('keyup',keysup)
-function keysdown(e){
-    keys[e.key]=true;
-}
-function keysup(e){
-    keys[e.key]=false;
-}
+function keysdown(e){keys[e.key]=true;}
+function keysup(e){keys[e.key]=false;}
+
 window.addEventListener('keypress',keypressed);
-function keypressed(e){
-    if(e.key==" "){
-        Bill.jump();
-    }
-}
+function keypressed(e){if(e.key==" ")Bill.jump();}
