@@ -21,42 +21,56 @@ class entity extends PIXI.Sprite{
         this.jumps=jumps;
         this.falltime=0;
         this.jumpsRemaining=jumps;
+
+        this.jumping = setInterval(() => {
+            
+        }, 1000/60 );
     }
     gravity(){
         if(checkCollison(this.x,this.y,this.width,this.height)){
             this.falltime=0;
-            this.y-=1;  
+            this.y=checkCollison(this.x,this.y,this.width,this.height,true);
         }else{
-            this.falltime+=0.01
-            this.y+=this.weight;
+            this.falltime+=1
+            this.y+=(this.weight*this.falltime/100);
         }
     }
     jump(){
         if(this.jumpsRemaining<1) return;
+        clearInterval(this.jumping);
+        this.jumpsRemaining-=1;
+        this.falltime=1;
         
-        if(this.jumpsRemaining>=1){
-            this.jumpsRemaining-=1;
-            this.falltime=0.01;
-        }
-        
-        const sleep = (time) => {return new Promise((resolve) => setTimeout(resolve, time))}
-
-        const jumping = async () => {
-            for (let i = 0; i < 500; i++) {
-                if(this.falltime>0.05&&this.y>=app.view.height-(Bill.height/2)-stage.height){
-                    setTimeout(() => {this.jumpsRemaining=this.jumps}, 10)
-                    break;
-                }
-                await sleep(1000/60)
-                this.y-=11;
-                if(this.falltime<0.05&&i>5){
-                    break;
-
-                }
+        this.jumping = setInterval(() => {
+            console.log(this.falltime)
+            if(this.falltime===0){
+                setTimeout(() => {
+                    this.jumpsRemaining=this.jumps;
+                    
+                }, 10)
+                this.jumping = setInterval(() => {
+                    
+                }, 1000/60);
             }
-        }
+            this.y-=11;
+        },1000/60)
+
+        // const sleep = (time) => {return new Promise((resolve) => setTimeout(resolve, time))}
+
+        // const jumping = async () => {
+        //     for (let i = 0; i < 500; i++) {
+        //         if(this.falltime==0){
+        //             console.log("jumping");
+        //             setTimeout(() => {this.jumpsRemaining=this.jumps}, 10)
+        //             break;
+        //         }
+        //         this.y-=11;
+        //         if(this.falltime<0.05&&i>5) break;
+        //         await sleep(1000/60);
+        //     }
+        // }
         
-        jumping()
+        // jumping()
     }
     moveLeft(){
         this.x-=this.speed;
@@ -73,10 +87,7 @@ class entity extends PIXI.Sprite{
     }
 
     death(){
-        const sleep = (time) => {
-            return new Promise((resolve) => setTimeout(resolve, time))
-        }
-
+        const sleep = (time) => {return new Promise((resolve) => setTimeout(resolve, time))}
         const respawn = async () => {
             for(let i = 0; i<30;i++){
                 await sleep(1000/60)
@@ -112,7 +123,7 @@ app.loader.load();
 function doneLoading(){
     addEntities();
     addObjects();
-    app.ticker.add(gameLoop)
+    startGame();
 }
 //adds entities to the screen
 function addEntities(){
@@ -132,23 +143,31 @@ function addObjects(){
     objects.push(stage);
 }
 
-function checkCollison(x,y,width,height) {
+function checkCollison(x,y,width,height,snap=false) {
     for(const object of objects){
-        console.log(object.x);
         if(y+height>=object.y && x+width>=object.x && object.x+object.width>= x){
+            if(snap){
+                return object.y - height;
+            }
             return true;
         }
     }
     return false;
 }
 //gameloop
-function gameLoop(delta){
-    Bill.gravity();
-    if(keys["a"]==true) Bill.moveLeft();
-    if(keys["d"]==true) Bill.moveRight();
-    if(Bill.x<-50 || Bill.x>1330) Bill.death();
-    // Bill.y=570;
-    // Bill.x=250;
+// function gameLoop(delta){
+//     Bill.gravity();
+//     if(keys["a"]==true) Bill.moveLeft();
+//     if(keys["d"]==true) Bill.moveRight();
+//     if(Bill.x<-50 || Bill.x>1330) Bill.death();
+// }
+function startGame(){
+    setInterval(() => {
+        Bill.gravity();
+        if(keys["a"]==true) Bill.moveLeft();
+        if(keys["d"]==true) Bill.moveRight();
+        if(Bill.x<-50 || Bill.x>1330) Bill.death();
+    }, 1000/60);
 }
 
 //keyboard handlers
