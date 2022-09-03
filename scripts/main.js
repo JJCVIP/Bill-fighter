@@ -10,7 +10,7 @@ class entity extends PIXI.Sprite{
         super(texture);
         this.scale.x=3;
         this.scale.y=3;
-        this.anchor.set(0.5);
+        this.anchor.set(0);
         this.name=name;
         this.x=x;
         this.y=y;
@@ -23,14 +23,12 @@ class entity extends PIXI.Sprite{
         this.jumpsRemaining=jumps;
     }
     gravity(){
-        if(this.y>=app.view.height-(Bill.height/2)-stage.height){
+        if(checkCollison(this.x,this.y,this.width,this.height)){
             this.falltime=0;
-            this.y=app.view.height-(Bill.height/2)-stage.height;
-            return;
-        }
-        if(this.y<app.view.height-(Bill.height/2)+1-stage.height){
-            this.falltime+=0.01; 
-            this.y+=this.falltime*this.weight;
+            this.y-=1;  
+        }else{
+            this.falltime+=0.01
+            this.y+=this.weight;
         }
     }
     jump(){
@@ -96,6 +94,7 @@ class object extends PIXI.Sprite{
         super(texture);
         this.x=x;
         this.y=y;
+        this.anchor.set(0);
     }
 }
 
@@ -103,7 +102,7 @@ class object extends PIXI.Sprite{
 app.loader.baseUrl="assets";
 
 app.loader
-    .add("Bill","sprites/TempBill2.png")
+    .add("Bill","sprites/TempBill.png")
     .add("Stage","bricks.png");
 
 app.loader.onComplete.add(doneLoading);
@@ -122,11 +121,25 @@ function addEntities(){
 } 
 
 //adds objects to the screen
+const objects = [];
 function addObjects(){
     stage=new object(app.loader.resources["Stage"].texture,0,0);
-    stage.x=app.view.width-stage.width-((app.view.width-stage.width)/2);
-    stage.y=app.view.height-stage.height;
+    stage.x=100
+    stage.y=600
+    stage.scale.x=10;
+    stage.scale.y=10;
     app.stage.addChild(stage);
+    objects.push(stage);
+}
+
+function checkCollison(x,y,width,height) {
+    for(const object of objects){
+        console.log(object.x);
+        if(y+height>=object.y && x+width>=object.x && object.x+object.width>= x){
+            return true;
+        }
+    }
+    return false;
 }
 //gameloop
 function gameLoop(delta){
@@ -134,6 +147,8 @@ function gameLoop(delta){
     if(keys["a"]==true) Bill.moveLeft();
     if(keys["d"]==true) Bill.moveRight();
     if(Bill.x<-50 || Bill.x>1330) Bill.death();
+    // Bill.y=570;
+    // Bill.x=250;
 }
 
 //keyboard handlers
