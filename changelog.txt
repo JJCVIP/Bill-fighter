@@ -1,3 +1,9 @@
+---------------Version 1.1.2 Alpha---------------
+    -sprites now render pixelated
+    -canvas scales to fit page
+
+~not-the 9/13/2022
+
 ---------------Version 1.1.1 Alpha---------------
     -added a stage and moved the ground up to align with the stage
     -changes file names and directories

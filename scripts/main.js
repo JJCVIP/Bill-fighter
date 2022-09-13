@@ -2,6 +2,7 @@ let keys = {};
 
 //Create the Pixi App and add it to a canvas
 let app = new PIXI.Application({width:1280, height:720, backgroundColor: 0x2980b9});
+PIXI.settings.SCALE_MODE = "nearest";
 document.body.appendChild(app.view);
 
 //Creates an entity class
@@ -42,7 +43,8 @@ class entity extends PIXI.Sprite{
         this.falltime=1;
         
         this.jumping = setInterval(() => {
-            console.log(this.falltime)
+            // console.log(this.falltime)
+            console.log(this.y);
             if(this.falltime===0){
                 setTimeout(() => {
                     this.jumpsRemaining=this.jumps;
