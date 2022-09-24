@@ -1,5 +1,7 @@
 let keys = {};
 
+let show_hitbox = false;
+
 //Create the Pixi App and add it to a canvas
 let app = new PIXI.Application({width:1280, height:720, backgroundColor: 0x2980b9});
 PIXI.settings.SCALE_MODE = "nearest";
@@ -7,10 +9,12 @@ document.body.appendChild(app.view);
 
 //Creates an entity class
 class entity extends PIXI.Sprite{
-    constructor(texture,name,x=0,y=0,health=1,speed=1,weight=3,player=false,jumps=2){
+    constructor(texture,name,x=0,y=0,health=1,speed=1,weight=3,size_x=3,size_y=3,player=false,jumps=2){
         super(texture);
-        this.scale.x=3;
-        this.scale.y=3;
+        this.scale.x=size_x;
+        this.scale.y=size_y;
+
+        this.size = [size_x, size_y];
         this.anchor.set(0);
         this.name=name;
         this.x=x;
@@ -23,9 +27,20 @@ class entity extends PIXI.Sprite{
         this.falltime=0;
         this.jumpsRemaining=jumps;
 
-        this.jumping = setInterval(() => {
-            
-        }, 1000/60 );
+        this.jumping = false;
+        this.active_attack = false;
+
+        this.attacks = {
+            neutral: {
+                frame: {
+                    0: {
+                        sprite: app.loader.resources["Bill_kick"].texture,
+                        hithox: false,
+                    }
+                },
+                duration: 500,
+            }
+        }
     }
     gravity(){
         if(checkCollison(this.x,this.y,this.width,this.height)){
@@ -85,7 +100,12 @@ class entity extends PIXI.Sprite{
 
     }
     attack(){
+        // if(this.active_attack != false) return;
 
+        // let attack = "neutral"
+        // this.active_attack = attack;
+        // let data = this.attacks[attack];
+        // this.sprite.texture(app.loader.resources["Bill_kick"].texture);
     }
 
     death(){
@@ -116,6 +136,7 @@ app.loader.baseUrl="assets";
 
 app.loader
     .add("Bill","sprites/TempBill.png")
+    .add("Bill_kick", "sprites/bill_kick.png")
     .add("Stage","bricks.png");
 
 app.loader.onComplete.add(doneLoading);
@@ -129,7 +150,7 @@ function doneLoading(){
 }
 //adds entities to the screen
 function addEntities(){
-    Bill=new entity(app.loader.resources["Bill"].texture,"Bill",100,100,10,5,21,true);
+    Bill=new entity(app.loader.resources["Bill"].texture,"Bill",100,100,10,5,21,3,3,false);
     app.stage.addChild(Bill);
 } 
 
@@ -168,13 +189,18 @@ function startGame(){
         Bill.gravity();
         if(keys["a"]==true) Bill.moveLeft();
         if(keys["d"]==true) Bill.moveRight();
+        // if(keys["k"]==true) Bill.attack();
         if(Bill.x<-50 || Bill.x>1330) Bill.death();
     }, 1000/60);
 }
 
 //keyboard handlers
-window.addEventListener('keydown',keysdown);
-window.addEventListener('keyup',keysup)
+window.addEventListener('keydown', keyHandler);
+window.addEventListener('keyup' ,keysup)
+function keyHandler(e) {
+    if(e.key == "Spacebar") e.preventDefault();
+    keys[e.key] = (e.type == 'keydown');
+}
 function keysdown(e){keys[e.key]=true;}
 function keysup(e){keys[e.key]=false;}
 
